@@ -1,0 +1,133 @@
+Current configuration : 1812 bytes
+!
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+!
+hostname R3
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+ip dhcp excluded-address 192.168.40.1 192.168.40.9
+!
+ip dhcp pool POOL_R3
+ network 192.168.40.0 255.255.255.0
+ default-router 192.168.40.1
+ dns-server 8.8.8.8
+!
+!
+!
+ip cef
+no ipv6 cef
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+crypto isakmp policy 10
+ encr aes
+ authentication pre-share
+ group 2
+crypto isakmp key jeewaskey address 17.5.7.2
+!
+!
+crypto ipsec transform-set R3_SET esp-aes esp-sha-hmac
+ mode tunnel
+!
+!
+!
+crypto map R3_MAP 10 ipsec-isakmp
+ set peer 17.5.7.2
+ set transform-set R3_SET
+ match address 100
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 3.3.3.3 255.255.255.255
+!
+interface Tunnel0
+ ip address 10.10.0.2 255.255.255.252
+ tunnel source Ethernet1/2
+ tunnel destination 17.5.7.2
+!
+interface FastEthernet0/0
+ no ip address
+ shutdown
+ duplex full
+!
+interface Ethernet1/0
+ ip address 192.168.40.1 255.255.255.0
+ ip nat inside
+ duplex full
+!
+interface Ethernet1/1
+ ip address dhcp
+ ip nat outside
+ shutdown
+ duplex full
+!
+interface Ethernet1/2
+ ip address dhcp
+ ip nat outside
+ duplex full
+ crypto map R3_MAP
+!
+interface Ethernet1/3
+ no ip address
+ shutdown
+ duplex full
+!
+router ospf 1
+ network 3.3.3.3 0.0.0.0 area 0
+ network 10.10.0.0 0.0.0.3 area 0
+ network 192.168.40.0 0.0.0.255 area 0
+!
+ip nat inside source list 1 interface Ethernet1/2 overload
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+ip route 0.0.0.0 0.0.0.0 Ethernet1/2
+ip route 0.0.0.0 0.0.0.0 Ethernet1/2 195.136.17.1
+!
+access-list 1 permit 192.168.40.0 0.0.0.255
+access-list 100 permit gre any any
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ login
+!
+!
+end
+

@@ -1,0 +1,101 @@
+Current configuration : 1028 bytes
+!
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+!
+hostname ISPR3
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+ip dhcp excluded-address 195.136.17.1
+!
+ip dhcp pool POOL_ISP3
+ network 195.136.17.0 255.255.255.252
+ default-router 195.136.17.1
+ dns-server 8.8.8.8
+!
+!
+!
+ip cef
+no ipv6 cef
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface FastEthernet0/0
+ no ip address
+ shutdown
+ duplex full
+!
+interface Ethernet1/0
+ ip address 195.136.17.1 255.255.255.252
+ ip ospf 1 area 0
+ duplex full
+!
+interface Ethernet1/1
+ ip address 10.0.0.9 255.255.255.252
+ ip ospf 1 area 0
+ duplex full
+!
+interface Ethernet1/2
+ ip address 10.0.0.6 255.255.255.252
+ ip ospf 1 area 0
+ duplex full
+!
+interface Ethernet1/3
+ no ip address
+ shutdown
+ duplex full
+!
+router ospf 1
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ login
+!
+!
+end
+
